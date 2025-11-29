@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SitiNet ISP - Ultra Reliable Broadband</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    {% set is_modern = settings.get('modern_theme_enabled') == 'true' %}
+</head>
+<body class="{% if is_modern %}theme-modern{% endif %}">
+    <div class="top-bar {% if is_modern %}top-bar--modern{% endif %}">
+        <div class="top-bar__left">
+            <span>24x7 Instant Support</span>
+            <a href="tel:{{ settings.get('support_phone', '+1 800 123 456').replace(' ', '') }}">{{ settings.get('support_phone', '+1 800 123 456') }}</a>
+            {% if is_modern %}
+            <span class="top-bar__pulse">Live network status • {{ settings.get('stat_uptime', '99.95%') }} uptime</span>
+            {% endif %}
+        </div>
+        <div class="top-bar__right">
+            <span>Follow us:</span>
+            <div class="social-links">
+                {% if settings.get('facebook_url') %}
+                <a href="{{ settings.get('facebook_url') }}" target="_blank" rel="noopener" aria-label="Facebook">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                {% endif %}
+                {% if settings.get('twitter_url') %}
+                <a href="{{ settings.get('twitter_url') }}" target="_blank" rel="noopener" aria-label="Twitter">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                </a>
+                {% endif %}
+                {% if settings.get('instagram_url') %}
+                <a href="{{ settings.get('instagram_url') }}" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <nav class="main-nav {% if is_modern %}main-nav--modern{% endif %}">
+        <div class="brand">
+            {% if settings.get('logo_url') %}
+            <img src="{{ settings.get('logo_url') }}" alt="{{ settings.get('company_name', 'SitiNet') }} Logo" class="brand-logo">
+            {% else %}
+            <div class="brand-mark">{{ (settings.get('company_name') or 'SitiNet')[0] }}</div>
+            {% endif %}
+            <div>
+                <strong>{{ settings.get('company_name') or 'SitiNet' }}</strong>
+                <p>{{ settings.get('company_tagline', 'Ultra Reliable Internet') }}</p>
+            </div>
+        </div>
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#plans">For Home</a></li>
+            <li><a href="#plans">For Business</a></li>
+            <li><a href="#contact">Support</a></li>
+        </ul>
+        <div class="nav-actions">
+            {% if settings.get('whatsapp_number') %}
+            <a href="https://wa.me/{{ settings.get('whatsapp_number').replace('+', '').replace(' ', '') }}" target="_blank" class="btn ghost" title="Chat on WhatsApp">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                WhatsApp
+            </a>
+            {% else %}
+            <a href="#contact" class="btn ghost">Quick Pay</a>
+            {% endif %}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn primary">Admin Portal</a>
+        </div>
+    </nav>
+
+    {% if is_modern %}
+    <header class="hero hero--modern" id="hero">
+        <div class="hero__primary">
+            <div class="hero-pill">Now serving {{ settings.get('current_location', 'New Delhi') }}</div>
+            <p class="eyebrow">{{ settings.get('hero_eyebrow', 'Fiber • Wireless • IPTV') }}</p>
+            <h1>{{ settings.get('hero_title', 'Pure fiber broadband with same-day installation in your city.') }}</h1>
+            <p class="lead">
+                {{ settings.get('hero_subtitle', 'Pick a recharge pack or bespoke installation plan. Every subscription includes Wi-Fi 6 router, OTT bundles, and concierge onboarding.') }}
+            </p>
+            <div class="hero__tags hero__tags--modern">
+                <span>{{ settings.get('stat_cities', '200+') }} city footprint</span>
+                <span>Wi-Fi 6 included</span>
+                <span>{{ settings.get('stat_support_value', '24/7') }} concierge desk</span>
+            </div>
+            <div class="hero__cta hero__cta--stacked">
+                <a href="#plans" class="btn primary">Browse Plans</a>
+                <a href="#install-form" class="btn ghost">Book Installation</a>
+                <button type="button" class="btn text" onclick="document.getElementById('coverage-form')?.scrollIntoView({behavior:'smooth'});">Check availability</button>
+            </div>
+            <div class="hero__stats hero__stats--modern">
+                <div>
+                    <span class="stat__value">{{ settings.get('stat_cities', '200+') }}</span>
+                    <span class="stat__label">{{ settings.get('stat_cities_label', 'Cities served') }}</span>
+                </div>
+                <div>
+                    <span class="stat__value">{{ settings.get('stat_uptime', '99.95%') }}</span>
+                    <span class="stat__label">{{ settings.get('stat_uptime_label', 'Network uptime') }}</span>
+                </div>
+                <div>
+                    <span class="stat__value">{{ settings.get('stat_support_value', '24/7') }}</span>
+                    <span class="stat__label">{{ settings.get('stat_support_label', 'Engineer support') }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero__panel">
+            <div class="hero-card hero-card--accent">
+                <p>Latency benchmark</p>
+                <strong>&lt; 12 ms</strong>
+                <small>Metro mesh average</small>
+            </div>
+            <div class="hero-card hero-card--gloss">
+                <div>
+                    <p>Support desk</p>
+                    <strong>{{ settings.get('support_phone', '+1 800 123 456') }}</strong>
+                </div>
+                <div>
+                    <p>Priority inbox</p>
+                    <a href="mailto:{{ settings.get('support_email', 'support@sitinet.io') }}">{{ settings.get('support_email', 'support@sitinet.io') }}</a>
+                </div>
+            </div>
+            <ul class="hero-card hero-card--list">
+                <li>Symmetrical fibre with Wi-Fi 6 router</li>
+                <li>Enterprise-grade SLAs for homes & SMBs</li>
+                <li>Installation slots confirmed in under 2 hrs</li>
+            </ul>
+        </div>
+    </header>
+    <section class="modern-overview">
+        <div class="overview-card">
+            <p class="eyebrow">Edge POPs</p>
+            <h3>{{ settings.get('stat_cities', '200+') }} hybrid cities</h3>
+            <p>From metros to townships—our fibre loops and licensed wireless spectrum keep latency predictable.</p>
+        </div>
+        <div class="overview-card">
+            <p class="eyebrow">Customer promise</p>
+            <h3>Zero install fees</h3>
+            <p>Wi-Fi 6 router, cabling, and engineer visit are bundled with every plan.</p>
+        </div>
+        <div class="overview-card">
+            <p class="eyebrow">Concierge desk</p>
+            <h3>{{ settings.get('stat_support_value', '24/7') }} live support</h3>
+            <p>Dial {{ settings.get('support_phone', '+1 800 123 456') }} or WhatsApp us for instant provisioning help.</p>
+        </div>
+    </section>
+    {% else %}
+    <header class="hero hero--compact">
+        <div class="hero__content">
+            <p class="eyebrow">{{ settings.get('hero_eyebrow', 'Fiber • Wireless • IPTV') }}</p>
+            <h1>{{ settings.get('hero_title', 'Pure fiber broadband with same-day installation in your city.') }}</h1>
+            <p class="lead">
+                {{ settings.get('hero_subtitle', 'Pick a recharge pack or bespoke installation plan. Every subscription includes Wi-Fi 6 router, OTT bundles, and concierge onboarding.') }}
+            </p>
+            <div class="hero__cta">
+                <a href="#plans" class="btn primary">Browse Plans</a>
+                <a href="#install-form" class="btn ghost">Book Installation</a>
+            </div>
+        </div>
+        <div class="hero__stats hero__stats--wide">
+            <div>
+                <span class="stat__value">{{ settings.get('stat_cities', '200+') }}</span>
+                <span class="stat__label">{{ settings.get('stat_cities_label', 'Cities served') }}</span>
+            </div>
+            <div>
+                <span class="stat__value">{{ settings.get('stat_uptime', '99.95%') }}</span>
+                <span class="stat__label">{{ settings.get('stat_uptime_label', 'Network uptime') }}</span>
+            </div>
+            <div>
+                <span class="stat__value">{{ settings.get('stat_support_value', '24/7') }}</span>
+                <span class="stat__label">{{ settings.get('stat_support_label', 'Engineer support') }}</span>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    <main>
+        {% if settings.get('features_enabled') == 'true' %}
+        <section class="features-section {% if is_modern %}features-section--modern{% endif %}">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+                        </svg>
+                    </div>
+                    <h3>{{ settings.get('feature1_title', 'Lightning Fast') }}</h3>
+                    <p>{{ settings.get('feature1_desc', 'Fiber optic speeds up to 1 Gbps with symmetrical upload/download') }}</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                        </svg>
+                    </div>
+                    <h3>{{ settings.get('feature2_title', '99.95% Uptime') }}</h3>
+                    <p>{{ settings.get('feature2_desc', 'Enterprise-grade reliability with 24/7 network monitoring') }}</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+                        </svg>
+                    </div>
+                    <h3>{{ settings.get('feature3_title', 'Free Equipment') }}</h3>
+                    <p>{{ settings.get('feature3_desc', 'Wi-Fi 6 router and installation included with every plan') }}</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                    </div>
+                    <h3>{{ settings.get('feature4_title', 'Same Day Setup') }}</h3>
+                    <p>{{ settings.get('feature4_desc', 'Quick installation with zero activation charges') }}</p>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="plans-shell{% if is_modern %} plans-shell--modern{% endif %}" id="plans">
+            {% if settings.get('promo_banner_enabled') == 'true' and settings.get('promo_banner_text') %}
+            <div class="promo-banner">
+                <span>{{ settings.get('promo_banner_text', '') }}</span>
+                <button class="promo-close" onclick="this.parentElement.style.display='none'" aria-label="Close banner">×</button>
+            </div>
+            {% endif %}
+
+            <div class="plans-header">
+                <div class="tabs">
+                    <button class="tab active" data-plan-tab="popular">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.25rem;">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                        Popular Plans
+                    </button>
+                    <button class="tab" data-plan-tab="all">All Plans</button>
+                </div>
+                <div class="location-picker">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.25rem;">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                    <span>Now serving</span>
+                    <button class="location-button" id="location-selector">
+                        {{ settings.get('current_location', 'New Delhi') }} <span>▼</span>
+                    </button>
+                </div>
+                {% if is_modern %}
+                <div class="plans-annotations">
+                    <span>Unlimited data</span>
+                    <span>9 regional data centers</span>
+                    <span>Static IP optional</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="plans-body">
+                <div class="slider-wrapper">
+                    <button class="slider-btn" id="plans-prev" aria-label="Previous plans">‹</button>
+                    <div class="plan-track" id="plan-track"></div>
+                    <button class="slider-btn" id="plans-next" aria-label="Next plans">›</button>
+                </div>
+                <aside class="install-card" id="install-form">
+                    <h3>Get same-day installation</h3>
+                    <p class="muted-text">Drop your details. Our concierge will confirm slots immediately.</p>
+                    <form id="install-request-form">
+                        <div class="form-row">
+                            <label for="full-name">Full name *</label>
+                            <input type="text" id="full-name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="phone-number">Mobile number *</label>
+                            <input type="tel" id="phone-number" placeholder="+91 98765 43210" pattern="[0-9+\s-]+" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="email-id">Email ID *</label>
+                            <input type="email" id="email-id" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="pin-code">PIN code *</label>
+                            <input type="text" id="pin-code" placeholder="110001" pattern="[0-9]{6}" maxlength="6" required>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="preferred-time">Preferred callback time</label>
+                            <select id="preferred-time">
+                                <option value="">Select time slot</option>
+                                <option value="morning">Morning (9 AM - 12 PM)</option>
+                                <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                                <option value="evening">Evening (4 PM - 8 PM)</option>
+                                <option value="anytime">Anytime</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="message">Additional requirements (optional)</label>
+                            <textarea id="message" rows="2" placeholder="Any specific requirements or questions?"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn primary btn-block">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 0.5rem;">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            Request callback
+                        </button>
+                    </form>
+                    <p id="install-status" class="status"></p>
+                    <p class="form-note">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        We respect your privacy. Your information is secure and never shared.
+                    </p>
+                </aside>
+            </div>
+
+            <div class="plan-notes {% if is_modern %}plan-notes--modern{% endif %}">
+                <ul>
+                    <li>Same day installation and zero activation charges.</li>
+                    <li>Complimentary Wi-Fi 6 router + OTT bundles on annual plans.</li>
+                    <li>Refundable security of ₹750 for dual band routers.</li>
+                    <li>Symmetrical upload / download speeds for every plan.</li>
+                    <li>Dedicated enterprise install teams for mission critical links.</li>
+                </ul>
+                <div class="contact-card" id="contact">
+                    <h4>Need help choosing?</h4>
+                    <p>Our success desk is on standby 24/7.</p>
+                    <div class="contact-card__row">
+                        <div>
+                            <small>Call us</small>
+                            <a href="tel:{{ settings.get('support_phone', '+1 800 123 456').replace(' ', '') }}">{{ settings.get('support_phone', '+1 800 123 456') }}</a>
+                        </div>
+                        <div>
+                            <small>Email</small>
+                            <a href="mailto:{{ settings.get('support_email', 'support@sitinet.io') }}">{{ settings.get('support_email', 'support@sitinet.io') }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {% if settings.get('show_speed_test') == 'true' or settings.get('show_coverage_check') == 'true' %}
+        <section class="tools-section {% if is_modern %}tools-section--modern{% endif %}">
+            <div class="section__header">
+                <div>
+                    <p class="eyebrow">Tools</p>
+                    <h2>Check your connection</h2>
+                </div>
+            </div>
+            <div class="tools-grid">
+                {% if settings.get('show_speed_test') == 'true' %}
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z"/>
+                        </svg>
+                    </div>
+                    <h3>Speed Test</h3>
+                    <p class="muted-text">Test your current internet speed</p>
+                    <button class="btn ghost" onclick="window.open('https://www.speedtest.net', '_blank')">Run test</button>
+                </div>
+                {% endif %}
+                
+                {% if settings.get('show_coverage_check') == 'true' %}
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                    </div>
+                    <h3>Coverage Check</h3>
+                    <p class="muted-text">Check if we serve your area</p>
+                    <form id="coverage-form" style="margin-top: 1rem;">
+                        <input type="text" id="coverage-pin" placeholder="Enter PIN code" pattern="[0-9]{6}" maxlength="6" required style="margin-bottom: 0.5rem;">
+                        <button type="submit" class="btn ghost btn-block">Check availability</button>
+                    </form>
+                    <p id="coverage-result" class="status" style="margin-top: 0.5rem;"></p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+    </main>
+
+    <footer class="footer {% if is_modern %}footer--modern{% endif %}">
+        <div class="footer-brand">
+            {% if settings.get('logo_url') %}
+            <img src="{{ settings.get('logo_url') }}" alt="{{ settings.get('company_name', 'SitiNet') }} Logo" class="brand-logo">
+            {% else %}
+            <div class="brand-mark">{{ (settings.get('company_name') or 'SitiNet')[0] }}</div>
+            {% endif %}
+            <div>
+                <strong>{{ settings.get('company_name') or 'SitiNet' }} ISP</strong>
+                <p>{{ settings.get('footer_tagline', 'Future ready connectivity') }}</p>
+            </div>
+        </div>
+        <div class="footer-links">
+            <div>
+                <h5>Cities Live</h5>
+                <p>{{ settings.get('cities_list', 'New Delhi • Jaipur • Indore • Pune • Kochi') }}</p>
+            </div>
+            <div>
+                <h5>Quick Links</h5>
+                <p><a href="#plans">Plans</a> • <a href="#install-form">Installation</a> • <a href="{{ url_for('admin.admin_dashboard') }}">Admin</a></p>
+            </div>
+        </div>
+        <div>
+            <h5>Reach us</h5>
+            <p>Network Ops Center</p>
+            <a href="tel:{{ settings.get('support_phone', '+1 800 123 456').replace(' ', '') }}">{{ settings.get('support_phone', '+1 800 123 456') }}</a>
+        </div>
+    </footer>
+
+    {% if settings.get('whatsapp_number') %}
+    <a href="https://wa.me/{{ settings.get('whatsapp_number').replace('+', '').replace(' ', '') }}" 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener"
+       aria-label="Chat on WhatsApp">
+        <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+    {% endif %}
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
+

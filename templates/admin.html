@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>SitiNet Admin Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-page">
+    <header class="admin-hero">
+        <div>
+            <p class="eyebrow">SITI broadband</p>
+            <h1>Admin Control Center</h1>
+            <p class="lead">Manage broadband plans, pricing, and admin accounts securely.</p>
+        </div>
+        <div class="admin-hero__cta">
+            <a href="{{ url_for('index') }}" class="btn ghost">Home</a>
+            {% if is_authenticated %}
+                <form method="post" action="{{ url_for('admin.admin_logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn ghost">Sign out</button>
+                </form>
+            {% endif %}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn primary">Refresh</a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if not is_authenticated %}
+            <section class="panel auth-panel">
+                <h2>Sign in</h2>
+                <p class="muted-text">Enter your admin username and password to continue.</p>
+                <form method="post" action="{{ url_for('admin.admin_login') }}" class="stacked-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <button type="submit" class="btn primary">Access portal</button>
+                </form>
+            </section>
+        {% else %}
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="plans">📋 Plans</button>
+                <button class="admin-tab" data-tab="content">🎨 Page Content</button>
+                <button class="admin-tab" data-tab="inquiries">📊 Inquiries</button>
+                <button class="admin-tab" data-tab="settings">⚙️ Settings</button>
+            </div>
+
+            <section class="section admin tab-content active" id="tab-plans" aria-label="Plan management">
+                <div class="section__header">
+                    <div>
+                        <p class="eyebrow">Plans</p>
+                        <h2>Recharge & installation catalog</h2>
+                    </div>
+                    <p>Signed in as <strong>{{ username }}</strong></p>
+                </div>
+
+                <div class="admin__grid">
+                    <div class="panel">
+                        <h3>Create or update plan</h3>
+                        <form id="plan-form">
+                            <div class="form-row">
+                                <label for="plan-name">Name</label>
+                                <input type="text" id="plan-name" required>
+                            </div>
+                            <div class="form-row">
+                                <label for="plan-description">Description</label>
+                                <textarea id="plan-description" rows="3" required></textarea>
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="plan-price">Price (INR)</label>
+                                    <input type="number" id="plan-price" step="1" min="0" required>
+                                </div>
+                                <div>
+                                    <label for="plan-cycle">Billing cycle</label>
+                                    <input type="text" id="plan-cycle" placeholder="Monthly / One-time" required>
+                                </div>
+                            </div>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="plan-type">Plan type</label>
+                                    <select id="plan-type" required>
+                                        <option value="recharge">Recharge</option>
+                                        <option value="installation">Installation</option>
+                                    </select>
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="plan-popular">
+                                    <label for="plan-popular">Mark as popular</label>
+                                </div>
+                            </div>
+                            <input type="hidden" id="plan-id">
+                            <div class="form-actions">
+                                <button type="submit" class="btn primary" id="save-plan">Save plan</button>
+                                <button type="button" class="btn ghost" id="reset-form">Reset</button>
+                            </div>
+                        </form>
+                        <p id="form-status" class="status"></p>
+                    </div>
+
+                    <div class="panel">
+                        <h3>Existing plans</h3>
+                        <p class="muted-text">Select a plan to edit or delete it.</p>
+                        <div id="admin-plan-list" class="admin-plan-list"></div>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <section class="section admin tab-content" id="tab-inquiries" aria-label="Customer inquiries">
+                <div class="section__header">
+                    <div>
+                        <p class="eyebrow">Leads</p>
+                        <h2>Customer inquiries</h2>
+                    </div>
+                    <div class="inquiry-stats">
+                        <span class="stat-badge stat-badge--pending">{{ inquiry_stats.pending }} Pending</span>
+                        <span class="stat-badge stat-badge--contacted">{{ inquiry_stats.contacted }} Contacted</span>
+                        <span class="stat-badge stat-badge--converted">{{ inquiry_stats.converted }} Converted</span>
+                    </div>
+                </div>
+
+                <div class="panel panel--wide">
+                    {% if inquiries %}
+                        <div class="inquiry-list">
+                            {% for inquiry in inquiries %}
+                                <div class="inquiry-item inquiry-item--{{ inquiry.status }}">
+                                    <div class="inquiry-info">
+                                        <h4>{{ inquiry.full_name }}</h4>
+                                        <div class="inquiry-details">
+                                            <span>📞 {{ inquiry.phone }}</span>
+                                            <span>✉️ {{ inquiry.email }}</span>
+                                            <span>📍 PIN: {{ inquiry.pin_code }}</span>
+                                            {% if inquiry.plan_interest %}
+                                                <span>💡 {{ inquiry.plan_interest }}</span>
+                                            {% endif %}
+                                            {% if inquiry.preferred_time %}
+                                                <span>🕐 {{ inquiry.preferred_time }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if inquiry.message %}
+                                            <p class="inquiry-message">{{ inquiry.message }}</p>
+                                        {% endif %}
+                                        <small class="muted-text">{{ inquiry.created_at.strftime('%b %d, %Y at %I:%M %p') }}</small>
+                                    </div>
+                                    <div class="inquiry-actions">
+                                        <form method="post" action="{{ url_for('admin.update_inquiry_status', inquiry_id=inquiry.id) }}" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <select name="status" onchange="this.form.submit()" class="status-select status-select--{{ inquiry.status }}">
+                                                <option value="pending" {% if inquiry.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="contacted" {% if inquiry.status == 'contacted' %}selected{% endif %}>Contacted</option>
+                                                <option value="converted" {% if inquiry.status == 'converted' %}selected{% endif %}>Converted</option>
+                                            </select>
+                                        </form>
+                                        <form method="post" action="{{ url_for('admin.delete_inquiry', inquiry_id=inquiry.id) }}" onsubmit="return confirm('Delete this inquiry?');" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn text danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="muted-text">No customer inquiries yet.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="section admin tab-content" id="tab-content" aria-label="Page content management">
+                <div class="section__header">
+                    <div>
+                        <p class="eyebrow">Content</p>
+                        <h2>Homepage settings</h2>
+                    </div>
+                    <p>Customize main page content</p>
+                </div>
+
+                <div class="content-sections">
+                    <div class="content-section">
+                        <button class="section-toggle active" data-section="branding">
+                            <span>🎨 Branding & Logo</span>
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                        <div class="section-content active" id="section-branding">
+                            <form method="post" action="{{ url_for('admin.update_page_settings') }}" class="settings-form">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="form-grid">
+                                    <div>
+                                        <label for="company_name">Company name</label>
+                                        <input type="text" id="company_name" name="company_name" value="{{ page_settings.get('company_name', '') }}" required>
+                                    </div>
+                                    <div>
+                                        <label for="company_tagline">Company tagline</label>
+                                        <input type="text" id="company_tagline" name="company_tagline" value="{{ page_settings.get('company_tagline', '') }}" required>
+                                    </div>
+                                </div>
+
+                                <label for="logo_url">Logo URL (leave empty to use letter mark)</label>
+                                <input type="url" id="logo_url" name="logo_url" value="{{ page_settings.get('logo_url', '') }}" placeholder="https://example.com/logo.png">
+                                <p class="muted-text small">Upload your logo to a service like Imgur, Cloudinary, or your own server, then paste the URL here.</p>
+
+                                <label for="footer_tagline">Footer tagline</label>
+                                <input type="text" id="footer_tagline" name="footer_tagline" value="{{ page_settings.get('footer_tagline', '') }}" required>
+
+                                <div class="save-button-sticky">
+                                    <button type="submit" class="btn primary btn-block">💾 Save Branding</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <button class="section-toggle" data-section="hero">
+                            <span>🎯 Hero Section</span>
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                        <div class="section-content" id="section-hero">
+                            <form method="post" action="{{ url_for('admin.update_page_settings') }}" class="settings-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="modern_theme_enabled" value="false">
+                            <div class="checkbox">
+                                <input type="checkbox" id="modern_theme_enabled" name="modern_theme_enabled" value="true" {% if page_settings.get('modern_theme_enabled') == 'true' %}checked{% endif %}>
+                                <label for="modern_theme_enabled">Enable modern landing page design</label>
+                            </div>
+                            <p class="muted-text small">Toggle between the legacy layout and the refreshed immersive experience at any time.</p>
+
+                            <h4 style="margin-top: 1.5rem;">Hero section</h4>
+                            <label for="hero_eyebrow">Hero eyebrow text (small text above title)</label>
+                            <input type="text" id="hero_eyebrow" name="hero_eyebrow" value="{{ page_settings.get('hero_eyebrow', '') }}" placeholder="Fiber • Wireless • IPTV">
+
+                            <label for="hero_title">Hero title</label>
+                            <textarea id="hero_title" name="hero_title" rows="2" required>{{ page_settings.get('hero_title', '') }}</textarea>
+
+                            <label for="hero_subtitle">Hero subtitle</label>
+                            <textarea id="hero_subtitle" name="hero_subtitle" rows="3" required>{{ page_settings.get('hero_subtitle', '') }}</textarea>
+
+                            <h4 style="margin-top: 1.5rem;">Statistics (Hero section)</h4>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="stat_cities">Stat 1 - Value</label>
+                                    <input type="text" id="stat_cities" name="stat_cities" value="{{ page_settings.get('stat_cities', '') }}" placeholder="200+" required>
+                                </div>
+                                <div>
+                                    <label for="stat_cities_label">Stat 1 - Label</label>
+                                    <input type="text" id="stat_cities_label" name="stat_cities_label" value="{{ page_settings.get('stat_cities_label', '') }}" placeholder="Cities served" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div>
+                                    <label for="stat_uptime">Stat 2 - Value</label>
+                                    <input type="text" id="stat_uptime" name="stat_uptime" value="{{ page_settings.get('stat_uptime', '') }}" placeholder="99.95%" required>
+                                </div>
+                                <div>
+                                    <label for="stat_uptime_label">Stat 2 - Label</label>
+                                    <input type="text" id="stat_uptime_label" name="stat_uptime_label" value="{{ page_settings.get('stat_uptime_label', '') }}" placeholder="Network uptime" required>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div>
+                                    <label for="stat_support_value">Stat 3 - Value</label>
+                                    <input type="text" id="stat_support_value" name="stat_support_value" value="{{ page_settings.get('stat_support_value', '') }}" placeholder="24/7" required>
+                                </div>
+                                <div>
+                                    <label for="stat_support_label">Stat 3 - Label</label>
+                                    <input type="text" id="stat_support_label" name="stat_support_label" value="{{ page_settings.get('stat_support_label', '') }}" placeholder="Engineer support" required>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-top: 1.5rem;">Contact information</h4>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="support_phone">Support phone</label>
+                                    <input type="text" id="support_phone" name="support_phone" value="{{ page_settings.get('support_phone', '') }}" required>
+                                </div>
+                                <div>
+                                    <label for="support_email">Support email</label>
+                                    <input type="email" id="support_email" name="support_email" value="{{ page_settings.get('support_email', '') }}" required>
+                                </div>
+                            </div>
+
+                            <label for="whatsapp_number">WhatsApp number (with country code)</label>
+                            <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ page_settings.get('whatsapp_number', '') }}" placeholder="+911234567890">
+                            <p class="muted-text small">Include country code (e.g., +91 for India). This enables WhatsApp chat button.</p>
+
+                            <label for="cities_list">Cities list (separate with •)</label>
+                            <input type="text" id="cities_list" name="cities_list" value="{{ page_settings.get('cities_list', '') }}" required>
+
+                            <label for="current_location">Current location (shown in "Now serving")</label>
+                            <input type="text" id="current_location" name="current_location" value="{{ page_settings.get('current_location', '') }}" required>
+
+                            <h4 style="margin-top: 1.5rem;">Promotional banner</h4>
+                            <label for="promo_banner_text">Banner text</label>
+                            <input type="text" id="promo_banner_text" name="promo_banner_text" value="{{ page_settings.get('promo_banner_text', '') }}" placeholder="🎉 Limited Offer: Get 3 months FREE!">
+
+                            <input type="hidden" name="promo_banner_enabled" value="false">
+                            <div class="checkbox">
+                                <input type="checkbox" id="promo_banner_enabled" name="promo_banner_enabled" value="true" {% if page_settings.get('promo_banner_enabled') == 'true' %}checked{% endif %}>
+                                <label for="promo_banner_enabled">Show promotional banner</label>
+                            </div>
+
+                            <h4 style="margin-top: 1.5rem;">Features section</h4>
+                            <input type="hidden" name="features_enabled" value="false">
+                            <div class="checkbox">
+                                <input type="checkbox" id="features_enabled" name="features_enabled" value="true" {% if page_settings.get('features_enabled') == 'true' %}checked{% endif %}>
+                                <label for="features_enabled">Show features section</label>
+                            </div>
+
+                            <label for="feature1_title">Feature 1 - Title</label>
+                            <input type="text" id="feature1_title" name="feature1_title" value="{{ page_settings.get('feature1_title', '') }}" placeholder="Lightning Fast">
+
+                            <label for="feature1_desc">Feature 1 - Description</label>
+                            <textarea id="feature1_desc" name="feature1_desc" rows="2">{{ page_settings.get('feature1_desc', '') }}</textarea>
+
+                            <label for="feature2_title">Feature 2 - Title</label>
+                            <input type="text" id="feature2_title" name="feature2_title" value="{{ page_settings.get('feature2_title', '') }}" placeholder="99.95% Uptime">
+
+                            <label for="feature2_desc">Feature 2 - Description</label>
+                            <textarea id="feature2_desc" name="feature2_desc" rows="2">{{ page_settings.get('feature2_desc', '') }}</textarea>
+
+                            <label for="feature3_title">Feature 3 - Title</label>
+                            <input type="text" id="feature3_title" name="feature3_title" value="{{ page_settings.get('feature3_title', '') }}" placeholder="Free Equipment">
+
+                            <label for="feature3_desc">Feature 3 - Description</label>
+                            <textarea id="feature3_desc" name="feature3_desc" rows="2">{{ page_settings.get('feature3_desc', '') }}</textarea>
+
+                            <label for="feature4_title">Feature 4 - Title</label>
+                            <input type="text" id="feature4_title" name="feature4_title" value="{{ page_settings.get('feature4_title', '') }}" placeholder="Same Day Setup">
+
+                            <label for="feature4_desc">Feature 4 - Description</label>
+                            <textarea id="feature4_desc" name="feature4_desc" rows="2">{{ page_settings.get('feature4_desc', '') }}</textarea>
+
+                            <h4 style="margin-top: 1.5rem;">Tools & features</h4>
+                            <input type="hidden" name="show_speed_test" value="false">
+                            <div class="checkbox">
+                                <input type="checkbox" id="show_speed_test" name="show_speed_test" value="true" {% if page_settings.get('show_speed_test') == 'true' %}checked{% endif %}>
+                                <label for="show_speed_test">Show speed test tool</label>
+                            </div>
+
+                            <input type="hidden" name="show_coverage_check" value="false">
+                            <div class="checkbox">
+                                <input type="checkbox" id="show_coverage_check" name="show_coverage_check" value="true" {% if page_settings.get('show_coverage_check') == 'true' %}checked{% endif %}>
+                                <label for="show_coverage_check">Show coverage checker</label>
+                            </div>
+
+                            <h4 style="margin-top: 1.5rem;">Social media links</h4>
+                            <label for="facebook_url">Facebook page URL</label>
+                            <input type="url" id="facebook_url" name="facebook_url" value="{{ page_settings.get('facebook_url', '') }}" placeholder="https://facebook.com/yourpage">
+
+                            <label for="twitter_url">Twitter profile URL</label>
+                            <input type="url" id="twitter_url" name="twitter_url" value="{{ page_settings.get('twitter_url', '') }}" placeholder="https://twitter.com/yourhandle">
+
+                            <label for="instagram_url">Instagram profile URL</label>
+                            <input type="url" id="instagram_url" name="instagram_url" value="{{ page_settings.get('instagram_url', '') }}" placeholder="https://instagram.com/yourhandle">
+
+                            <div class="save-button-sticky">
+                                <button type="submit" class="btn primary btn-block">💾 Save All Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section admin tab-content" id="tab-settings" aria-label="Admin settings">
+                <div class="section__header">
+                    <div>
+                        <p class="eyebrow">Settings</p>
+                        <h2>Admin management</h2>
+                    </div>
+                    <p>Manage admin users and security</p>
+                </div>
+
+                <div class="admin__grid">
+                    <div class="panel">
+                        <h3>➕ Add another admin</h3>
+                        <form method="post" action="{{ url_for('admin.admin_create_user') }}" class="stacked-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label for="new_username">Username</label>
+                            <input type="text" id="new_username" name="new_username" required>
+
+                            <label for="new_password">Password</label>
+                            <input type="password" id="new_password" name="new_password" required>
+
+                            <button type="submit" class="btn primary">Create admin</button>
+                        </form>
+                        <p class="muted-text small">Share credentials securely with authorized staff only.</p>
+                    </div>
+
+                    <div class="panel">
+                        <h3>👥 Admin directory</h3>
+                        {% if admin_users %}
+                            <ul class="admin-user-list">
+                                {% for admin in admin_users %}
+                                    <li class="admin-user-item">
+                                        <div>
+                                            <strong>{{ admin.username }}</strong>
+                                            <small class="muted-text">
+                                                Added {{ admin.created_at.strftime('%b %d, %Y') }}
+                                            </small>
+                                        </div>
+                                        {% if admin.id == current_admin_id %}
+                                            <span class="tag">You</span>
+                                        {% else %}
+                                            <form method="post"
+                                                  action="{{ url_for('admin.admin_delete_user', user_id=admin.id) }}"
+                                                  onsubmit="return confirm('Delete admin {{ admin.username }}?');">
+                                                                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn text danger">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="muted-text">No admins yet.</p>
+                        {% endif %}
+                        <p class="muted-text small">Removing an admin revokes their access immediately.</p>
+                    </div>
+
+                    <div class="panel">
+                        <h3>🔐 Change your password</h3>
+                        <form method="post" action="{{ url_for('admin.admin_change_password') }}" class="stacked-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <label for="current_password">Current password</label>
+                            <input type="password" id="current_password" name="current_password" required>
+
+                            <label for="new_password_change">New password</label>
+                            <input type="password" id="new_password_change" name="new_password" required>
+
+                            <label for="confirm_password">Confirm new password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+
+                            <button type="submit" class="btn primary">Update password</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <p>© {{ 2025 }} SitiNet ISP. Secure operations.</p>
+        <div>
+            <a href="{{ url_for('admin.admin_dashboard') }}">Admin portal</a>
+            <span>•</span>
+            <a href="{{ url_for('admin.admin_dashboard') }}">Need access?</a>
+        </div>
+    </footer>
+
+    {% if is_authenticated %}
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% endif %}
+</body>
+</html>
+
