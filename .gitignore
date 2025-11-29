@@ -1,0 +1,41 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+.eggs/
+
+# Environments
+.venv/
+.env
+.env.*
+!.env.example
+
+# IDE / tooling
+.vscode/
+*.code-workspace
+
+# Flask / instance data
+instance/*.db
+instance/*.sqlite3
+instance/*.sqlite
+instance/*.bak
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Local data
+*.db
+*.sqlite
+
+# Build outputs
+/dist/
+/build/
+
+# Node modules if added later
+node_modules/

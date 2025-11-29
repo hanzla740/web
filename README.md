@@ -31,6 +31,22 @@ Open http://127.0.0.1:5000/ in your browser.
 Admin portal lives at http://127.0.0.1:5000/admin  
 Default credentials: `admin / admin123` (change after first login).
 
+## Production readiness
+
+1. Copy `.env.example` to `.env` and provide real `SECRET_KEY`, `DATABASE_URL`, and `ADMIN_DEFAULT_PASSWORD` values.
+2. Install dependencies on the target host and make sure `instance/` is writable so SQLite (or another DB) can create its file.
+3. Use the WSGI entry point via Waitress or Gunicorn instead of Flask’s debug server:
+
+```powershell
+G:/siti/.venv/Scripts/python.exe -m pip install -r requirements.txt
+setx SECRET_KEY "super-secret"
+waitress-serve --listen=0.0.0.0:5000 --call app:create_app
+```
+
+The repo also includes `wsgi.py` (for platforms that expect a module-level `app`) and a `Procfile` using Waitress which works on Render/Heroku-style hosts. Update the command if you switch to Gunicorn on Linux.
+
+For reverse proxying, point Nginx/Apache at the Waitress/Gunicorn socket and enable HTTPS according to your provider’s guidance.
+
 ## Configuration
 
 | Variable                | Default       | Description                                |

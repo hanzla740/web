@@ -1,0 +1,8 @@
+"""WSGI entry point for production servers."""
+
+from app import create_app
+
+app = create_app()
+
+if __name__ == "__main__":  # pragma: no cover
+    app.run()
