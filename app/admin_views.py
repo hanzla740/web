@@ -184,7 +184,8 @@ def update_page_settings():
 
     for key in checkbox_settings:
         if key in request.form:
-            value = "true" if request.form.get(key) == "true" else "false"
+            submitted_values = request.form.getlist(key)
+            value = "true" if "true" in submitted_values else "false"
             upsert_setting(key, value)
 
     db.session.commit()
