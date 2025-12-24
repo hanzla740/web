@@ -20,10 +20,16 @@ def create_app():
         template_folder=os.path.join(os.path.dirname(__file__), "..", "templates"),
     )
 
-    # Database Configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL", "sqlite:///instance/plans.db"
-    )
+    # Database Configuration - Railway compatible
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        # For Railway, use /tmp for writable SQLite
+        if os.getenv("RAILWAY_ENVIRONMENT"):
+            database_url = "sqlite:////tmp/plans.db"
+        else:
+            database_url = "sqlite:///instance/plans.db"
+    
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
     # Security Configuration
