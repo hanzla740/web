@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "waitress-serve --host=0.0.0.0 --port=$PORT --call app:create_app"
+startCommand = "python app.py"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
