@@ -47,6 +47,7 @@ async function fetchPlans() {
         const response = await fetch(endpoints.plans, { credentials: "same-origin" });
         if (!response.ok) throw new Error("Failed to fetch plans");
         state.plans = await response.json();
+        console.log("Plans loaded:", state.plans.length); // Debug log
         renderPlanCards();
         renderAdminList();
     } catch (error) {
@@ -67,9 +68,17 @@ function renderPlanCards() {
     const plans = getFilteredPlans();
     if (plans.length === 0) {
         selectors.planTrack.innerHTML = '<p class="muted-text">No plans available.</p>';
+        // Hide slider buttons when no plans
+        if (selectors.prevButton) selectors.prevButton.style.display = 'none';
+        if (selectors.nextButton) selectors.nextButton.style.display = 'none';
         return;
     }
     selectors.planTrack.innerHTML = plans.map((plan) => buildPlanCard(plan)).join("");
+    
+    // Update slider buttons after rendering
+    setTimeout(() => {
+        updateSliderButtons();
+    }, 100);
 }
 
 function buildPlanCard(plan) {
@@ -234,10 +243,15 @@ selectors.planTabs.forEach((tab) => {
 
 // Auto-hide/show slider buttons based on scroll position and content
 function updateSliderButtons() {
-    if (!selectors.planTrack || !selectors.prevButton || !selectors.nextButton) return;
+    if (!selectors.planTrack || !selectors.prevButton || !selectors.nextButton) {
+        console.log("Missing slider elements"); // Debug log
+        return;
+    }
     
     const { scrollLeft, scrollWidth, clientWidth } = selectors.planTrack;
     const hasOverflow = scrollWidth > clientWidth;
+    
+    console.log("Slider debug:", { scrollLeft, scrollWidth, clientWidth, hasOverflow }); // Debug log
     
     // Show/hide buttons based on whether there's overflow content
     if (!hasOverflow) {
@@ -253,6 +267,8 @@ function updateSliderButtons() {
     const isAtStart = scrollLeft <= 10;
     const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
     
+    console.log("Button states:", { isAtStart, isAtEnd }); // Debug log
+    
     // Previous button
     selectors.prevButton.style.opacity = isAtStart ? '0.4' : '1';
     selectors.prevButton.style.pointerEvents = isAtStart ? 'none' : 'auto';
@@ -265,8 +281,11 @@ function updateSliderButtons() {
 }
 
 // Enhanced slider navigation with better mobile support and smooth scrolling
-selectors.prevButton?.addEventListener("click", () => {
+selectors.prevButton?.addEventListener("click", (e) => {
+    e.preventDefault();
     if (!selectors.planTrack) return;
+    
+    console.log("Previous button clicked"); // Debug log
     
     const cardWidth = window.innerWidth < 768 ? 300 : 360;
     const scrollAmount = cardWidth + 20; // Card width + gap
@@ -280,8 +299,11 @@ selectors.prevButton?.addEventListener("click", () => {
     setTimeout(updateSliderButtons, 300);
 });
 
-selectors.nextButton?.addEventListener("click", () => {
+selectors.nextButton?.addEventListener("click", (e) => {
+    e.preventDefault();
     if (!selectors.planTrack) return;
+    
+    console.log("Next button clicked"); // Debug log
     
     const cardWidth = window.innerWidth < 768 ? 300 : 360;
     const scrollAmount = cardWidth + 20; // Card width + gap
@@ -826,8 +848,9 @@ const spinnerStyles = `
 // Inject styles
 const styleSheet = document.createElement('style');
 styleSheet.textContent = spinnerStyles;
-document.head.appendChild(styleSheet);/
-/ Enhanced touch/swipe support for mobile slider
+document.head.appendChild(styleSheet);
+
+// Enhanced touch/swipe support for mobile slider
 let isDown = false;
 let startX;
 let scrollLeft;

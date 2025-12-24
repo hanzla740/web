@@ -99,7 +99,7 @@ body::before {
     position: fixed;
     inset: 0;
     background: var(--gradient-mesh);
-    opacity: 0.6;
+    opacity: 0.8;
     z-index: -1;
     animation: meshMove 30s ease-in-out infinite;
 }
