@@ -20,29 +20,13 @@ def create_app():
         template_folder=os.path.join(os.path.dirname(__file__), "..", "templates"),
     )
 
-    # Database Configuration - Railway compatible with fallbacks
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        # For Railway or other cloud platforms
-        if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER") or os.getenv("HEROKU"):
-            # Try multiple fallback options for Railway
-            try:
-                # Option 1: Try /tmp directory
-                os.makedirs("/tmp", exist_ok=True)
-                database_url = "sqlite:////tmp/plans.db"
-            except (OSError, PermissionError):
-                try:
-                    # Option 2: Try current directory
-                    database_url = "sqlite:///plans.db"
-                except:
-                    # Option 3: Use in-memory database (data won't persist)
-                    database_url = "sqlite:///:memory:"
-                    print("WARNING: Using in-memory database - data will not persist!")
-        else:
-            # Local development - ensure instance directory exists
-            instance_dir = os.path.join(os.path.dirname(__file__), "..", "instance")
-            os.makedirs(instance_dir, exist_ok=True)
-            database_url = "sqlite:///instance/plans.db"
+    # Database Configuration - Simplified for Railway
+    database_url = os.getenv("DATABASE_URL", "sqlite:///:memory:")
+    
+    # For Railway, always use in-memory SQLite to avoid file system issues
+    if os.getenv("RAILWAY_ENVIRONMENT"):
+        database_url = "sqlite:///:memory:"
+        print("Railway: Using in-memory SQLite database")
     
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

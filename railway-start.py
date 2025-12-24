@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Railway-specific startup script that handles database initialization
+Railway-specific startup script - SQLite only approach
 """
 import os
 import sys
 
 def setup_railway_environment():
-    """Setup environment for Railway deployment"""
+    """Setup environment for Railway deployment with SQLite"""
     
     # Set Railway environment flag
     os.environ["RAILWAY_ENVIRONMENT"] = "true"
@@ -16,24 +16,10 @@ def setup_railway_environment():
         print("ERROR: SECRET_KEY environment variable is required")
         sys.exit(1)
     
-    # Check database configuration
-    database_url = os.getenv("DATABASE_URL")
-    
-    if not database_url:
-        print("WARNING: No DATABASE_URL found. Using in-memory SQLite...")
-        # Use in-memory SQLite as fallback
-        os.environ["DATABASE_URL"] = "sqlite:///:memory:"
-        print("Using in-memory SQLite - data will not persist between restarts!")
-    elif database_url.startswith("postgres"):
-        # Check if psycopg2 is available
-        try:
-            import psycopg2
-            print(f"Railway startup: Using PostgreSQL database")
-        except ImportError:
-            print("WARNING: psycopg2 not available, falling back to SQLite")
-            os.environ["DATABASE_URL"] = "sqlite:///:memory:"
-    else:
-        print(f"Railway startup: Using database at {database_url[:50]}...")
+    # Force SQLite in-memory database for Railway
+    print("Railway startup: Using in-memory SQLite database")
+    os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+    print("Note: Data will reset on each deployment (suitable for demo/testing)")
     
     # Import and run the Flask app
     from app import app
@@ -44,6 +30,7 @@ def setup_railway_environment():
     print(f"Starting SitiNet ISP Portal on port {port}")
     print("Admin credentials: admin / SecureAdmin2024!")
     print(f"Access at: https://web-production-170f5.up.railway.app/")
+    print("Database: In-memory SQLite (demo data will be created)")
     
     app.run(host="0.0.0.0", port=port, debug=False)
 
