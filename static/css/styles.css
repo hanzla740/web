@@ -1743,66 +1743,109 @@ input, textarea, select {
     
     /* Plans section mobile optimization */
     .plans-shell {
-        padding: var(--space-xl) var(--space-md);
+        padding: var(--space-xl) var(--space-sm);
+        overflow-x: hidden;
     }
     
     .plans-header {
         flex-direction: column;
         align-items: stretch;
-        gap: var(--space-lg);
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
     }
     
     .tabs {
         width: 100%;
         flex-direction: row;
+        padding: 0.25rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        margin: 0 calc(-1 * var(--space-sm));
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
+    }
+    
+    .tabs::-webkit-scrollbar {
+        display: none;
     }
     
     .tab {
-        flex: 1;
-        padding: var(--space-md) var(--space-sm);
-        font-size: 0.875rem;
+        flex: 0 0 auto;
+        padding: var(--space-sm) var(--space-lg);
+        font-size: 0.8125rem;
         text-align: center;
+        white-space: nowrap;
+        min-width: 140px;
+    }
+    
+    .location-picker {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-sm);
+        font-size: 0.875rem;
+        padding: 0 var(--space-sm);
+    }
+    
+    .location-button {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.875rem;
     }
     
     .plans-body {
         grid-template-columns: 1fr;
-        gap: var(--space-xl);
+        gap: var(--space-lg);
+    }
+    
+    .slider-wrapper {
+        padding: var(--space-md);
+        margin: 0 calc(-1 * var(--space-sm));
+        overflow: visible;
     }
     
     .plan-track {
         grid-auto-columns: minmax(280px, 1fr);
         gap: var(--space-md);
         padding-bottom: var(--space-md);
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
     }
     
     .plan-card {
         padding: var(--space-lg);
-        margin: 0 var(--space-xs);
-    }
-    
-    .slider-wrapper {
-        padding: var(--space-lg);
+        margin: 0;
+        min-width: 280px;
     }
     
     .slider-btn {
         width: 40px;
         height: 40px;
         font-size: 1.25rem;
+        z-index: 10;
     }
     
     #plans-prev {
-        left: var(--space-sm);
+        left: var(--space-xs);
     }
     
     #plans-next {
-        right: var(--space-sm);
+        right: var(--space-xs);
     }
     
-    /* Install card mobile */
+    /* Install card mobile - full width and better spacing */
     .install-card {
         position: static;
-        margin-top: var(--space-xl);
-        padding: var(--space-lg);
+        margin: var(--space-lg) calc(-1 * var(--space-sm)) 0;
+        padding: var(--space-lg) var(--space-lg);
+        width: calc(100% + 2 * var(--space-sm));
+        box-sizing: border-box;
+    }
+    
+    .install-card h3 {
+        font-size: 1.25rem;
+        text-align: center;
+        margin-bottom: var(--space-md);
     }
     
     /* Form improvements for mobile */
@@ -1958,24 +2001,54 @@ input, textarea, select {
     
     /* Plans section ultra-compact */
     .plans-shell {
-        padding: var(--space-lg) var(--space-sm);
+        padding: var(--space-lg) var(--space-xs);
+    }
+    
+    .plans-header {
+        gap: var(--space-sm);
+        margin-bottom: var(--space-md);
+    }
+    
+    .tabs {
+        margin: 0 calc(-1 * var(--space-xs));
+        padding-left: var(--space-xs);
+        padding-right: var(--space-xs);
+    }
+    
+    .tab {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.75rem;
+        min-width: 120px;
+    }
+    
+    .location-picker {
+        font-size: 0.8125rem;
+        padding: 0 var(--space-xs);
+    }
+    
+    .plans-body {
+        gap: var(--space-md);
+    }
+    
+    .slider-wrapper {
+        margin: 0 calc(-1 * var(--space-xs));
+        padding: var(--space-sm);
     }
     
     .plan-track {
         grid-auto-columns: minmax(260px, 1fr);
         gap: var(--space-sm);
+        padding-left: var(--space-xs);
+        padding-right: var(--space-xs);
     }
     
     .plan-card {
         padding: var(--space-md);
+        min-width: 260px;
     }
     
     .price {
         font-size: 2rem;
-    }
-    
-    .slider-wrapper {
-        padding: var(--space-md);
     }
     
     .slider-btn {
@@ -1984,9 +2057,15 @@ input, textarea, select {
         font-size: 1rem;
     }
     
-    /* Forms ultra-compact */
+    /* Install card ultra-compact */
     .install-card {
+        margin: var(--space-md) calc(-1 * var(--space-xs)) 0;
         padding: var(--space-md);
+        width: calc(100% + 2 * var(--space-xs));
+    }
+    
+    .install-card h3 {
+        font-size: 1.125rem;
     }
     
     input, textarea, select {
