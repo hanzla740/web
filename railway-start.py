@@ -18,15 +18,16 @@ def setup_railway_environment():
         print("ERROR: SECRET_KEY environment variable is required")
         sys.exit(1)
     
-    # Create a writable temp directory for SQLite
-    temp_dir = tempfile.mkdtemp()
-    db_path = os.path.join(temp_dir, "plans.db")
+    # Check if we have PostgreSQL (preferred) or fall back to SQLite
+    database_url = os.getenv("DATABASE_URL")
     
-    # Set database URL to use the temp file
-    if not os.getenv("DATABASE_URL"):
-        os.environ["DATABASE_URL"] = f"sqlite:///{db_path}"
-    
-    print(f"Railway startup: Using database at {os.getenv('DATABASE_URL')}")
+    if not database_url:
+        print("WARNING: No DATABASE_URL found. Attempting SQLite fallback...")
+        # Try to use in-memory SQLite as last resort
+        os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+        print("Using in-memory SQLite - data will not persist between restarts!")
+    else:
+        print(f"Railway startup: Using database at {database_url[:50]}...")
     
     # Import and run the Flask app
     from app import app
@@ -35,6 +36,8 @@ def setup_railway_environment():
     port = int(os.environ.get("PORT", 5000))
     
     print(f"Starting SitiNet ISP Portal on port {port}")
+    print("Admin credentials: admin / SecureAdmin2024!")
+    
     app.run(host="0.0.0.0", port=port, debug=False)
 
 if __name__ == "__main__":
