@@ -39,3 +39,13 @@ Thumbs.db
 
 # Node modules if added later
 node_modules/
+
+# Production secrets
+.env.production
+.env.local
+
+# Docker
+.dockerignore
+
+# Deployment
+.railway/

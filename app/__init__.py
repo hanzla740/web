@@ -20,14 +20,30 @@ def create_app():
         template_folder=os.path.join(os.path.dirname(__file__), "..", "templates"),
     )
 
+    # Database Configuration
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL", "sqlite:///plans.db"
+        "DATABASE_URL", "sqlite:///instance/plans.db"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret")
-    app.config["WTF_CSRF_TIME_LIMIT"] = None
+    
+    # Security Configuration
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+    if not app.config["SECRET_KEY"]:
+        raise ValueError("SECRET_KEY environment variable must be set for production")
+    
+    # CSRF Configuration
+    app.config["WTF_CSRF_TIME_LIMIT"] = int(os.getenv("WTF_CSRF_TIME_LIMIT", "3600"))
+    
+    # Session Security (for production)
+    if os.getenv("FLASK_ENV") == "production":
+        app.config["SESSION_COOKIE_SECURE"] = True
+        app.config["SESSION_COOKIE_HTTPONLY"] = True
+        app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # CORS Configuration - Restrict in production
+    allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+    CORS(app, resources={r"/api/*": {"origins": allowed_origins}})
+    
     db.init_app(app)
     csrf.init_app(app)
 
