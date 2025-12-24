@@ -1590,7 +1590,63 @@ textarea {
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
+   MOBILE OPTIMIZATIONS & TOUCH IMPROVEMENTS
+   ============================================ */
+
+/* Touch-friendly tap targets */
+.btn, .tab, .slider-btn, .location-button, 
+.admin-tab, .mobile-menu-toggle {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Improve touch scrolling */
+.plan-track, .admin-tabs, .nav-links {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+}
+
+@media (max-width: 768px) {
+    input, textarea, select {
+        font-size: 16px; /* Maintain 16px on mobile */
+    }
+}
+
+/* Better mobile viewport handling */
+.hero, .features-section, .plans-shell, .tools-section {
+    overflow-x: hidden;
+}
+
+/* Mobile-specific animations */
+@media (prefers-reduced-motion: no-preference) {
+    .plan-card:hover {
+        transform: translateY(-4px); /* Reduced for mobile */
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-6px); /* Reduced for mobile */
+    }
+}
+
+/* Landscape phone optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: var(--space-lg) var(--space-md);
+    }
+    
+    .hero__stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN ENHANCEMENTS
    ============================================ */
 
 @media (max-width: 1024px) {
@@ -1614,9 +1670,11 @@ textarea {
 }
 
 @media (max-width: 768px) {
+    /* Typography adjustments */
     h1 { font-size: 2.5rem; }
     h2 { font-size: 2rem; }
     
+    /* Navigation improvements */
     .mobile-menu-toggle {
         display: flex;
     }
@@ -1633,6 +1691,7 @@ textarea {
         box-shadow: var(--shadow-lg);
         display: none;
         gap: var(--space-lg);
+        z-index: 1000;
     }
     
     .nav-links.active {
@@ -1643,41 +1702,131 @@ textarea {
         display: none;
     }
     
+    .nav-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: var(--space-sm);
+    }
+    
+    .nav-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Hero section mobile optimization */
+    .hero {
+        grid-template-columns: 1fr;
+        padding: var(--space-2xl) var(--space-md);
+        min-height: auto;
+        gap: var(--space-xl);
+    }
+    
     .hero__stats {
         grid-template-columns: 1fr;
         gap: var(--space-lg);
+        padding: var(--space-lg);
     }
     
     .stat__value {
         font-size: 2.5rem;
     }
     
+    /* Features section mobile */
     .features-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
     }
     
-    .tabs {
-        width: 100%;
+    .feature-card {
+        padding: var(--space-lg);
     }
     
-    .tab {
-        flex: 1;
-        padding: var(--space-md) var(--space-lg);
-        font-size: 0.875rem;
+    /* Plans section mobile optimization */
+    .plans-shell {
+        padding: var(--space-xl) var(--space-md);
     }
     
     .plans-header {
         flex-direction: column;
         align-items: stretch;
+        gap: var(--space-lg);
+    }
+    
+    .tabs {
+        width: 100%;
+        flex-direction: row;
+    }
+    
+    .tab {
+        flex: 1;
+        padding: var(--space-md) var(--space-sm);
+        font-size: 0.875rem;
+        text-align: center;
+    }
+    
+    .plans-body {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
     }
     
     .plan-track {
         grid-auto-columns: minmax(280px, 1fr);
+        gap: var(--space-md);
+        padding-bottom: var(--space-md);
+    }
+    
+    .plan-card {
+        padding: var(--space-lg);
+        margin: 0 var(--space-xs);
+    }
+    
+    .slider-wrapper {
+        padding: var(--space-lg);
     }
     
     .slider-btn {
         width: 40px;
         height: 40px;
+        font-size: 1.25rem;
+    }
+    
+    #plans-prev {
+        left: var(--space-sm);
+    }
+    
+    #plans-next {
+        right: var(--space-sm);
+    }
+    
+    /* Install card mobile */
+    .install-card {
+        position: static;
+        margin-top: var(--space-xl);
+        padding: var(--space-lg);
+    }
+    
+    /* Form improvements for mobile */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+    
+    input, textarea, select {
+        padding: var(--space-md);
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: var(--space-md) var(--space-lg);
+        font-size: 1rem;
+        min-height: 48px; /* Touch-friendly */
+    }
+    
+    /* Plan notes mobile */
+    .plan-notes {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+        margin-top: var(--space-xl);
     }
     
     .contact-card__row {
@@ -1685,19 +1834,63 @@ textarea {
         gap: var(--space-md);
     }
     
+    /* Tools section mobile */
     .tools-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
     }
     
+    .tool-card {
+        padding: var(--space-lg);
+    }
+    
+    /* Footer mobile */
     .footer {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
+        text-align: center;
     }
     
+    /* Admin section mobile */
     .admin__grid {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
     }
     
+    .admin-tabs {
+        padding: 0 var(--space-md);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .admin-tab {
+        padding: var(--space-md) var(--space-lg);
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
+    
+    /* WhatsApp float mobile */
     .whatsapp-float {
+        width: 56px;
+        height: 56px;
+        bottom: var(--space-lg);
+        right: var(--space-lg);
+    }
+    
+    /* Top bar mobile */
+    .top-bar {
+        flex-direction: column;
+        gap: var(--space-sm);
+        text-align: center;
+        padding: var(--space-md);
+    }
+    
+    .top-bar__left, .top-bar__right {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+}
         width: 56px;
         height: 56px;
         bottom: var(--space-lg);
@@ -1706,36 +1899,162 @@ textarea {
 }
 
 @media (max-width: 480px) {
-    .top-bar {
-        flex-direction: column;
-        gap: var(--space-sm);
-        text-align: center;
+    /* Extra small screens - phones in portrait */
+    
+    /* Typography for small screens */
+    h1 { font-size: 2rem; line-height: 1.1; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+    
+    /* Navigation ultra-compact */
+    .main-nav {
+        padding: var(--space-md);
     }
     
-    .top-bar__left, .top-bar__right {
-        justify-content: center;
+    .brand {
+        gap: var(--space-sm);
     }
     
     .brand-mark, .brand-logo {
-        width: 44px;
-        height: 44px;
+        width: 40px;
+        height: 40px;
     }
     
     .brand strong {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
     }
     
+    .brand p {
+        font-size: 0.75rem;
+    }
+    
+    /* Hero ultra-compact */
     .hero {
-        padding: var(--space-xl) var(--space-md);
+        padding: var(--space-xl) var(--space-sm);
+        gap: var(--space-lg);
     }
     
-    .btn {
-        padding: var(--space-md) var(--space-lg);
-        font-size: 0.875rem;
+    .hero__content .lead {
+        font-size: 1rem;
+    }
+    
+    .hero__cta {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .hero__cta .btn {
+        width: 100%;
+    }
+    
+    .hero__stats {
+        padding: var(--space-md);
+        gap: var(--space-md);
+    }
+    
+    .stat__value {
+        font-size: 2rem;
+    }
+    
+    /* Plans section ultra-compact */
+    .plans-shell {
+        padding: var(--space-lg) var(--space-sm);
+    }
+    
+    .plan-track {
+        grid-auto-columns: minmax(260px, 1fr);
+        gap: var(--space-sm);
+    }
+    
+    .plan-card {
+        padding: var(--space-md);
     }
     
     .price {
-        font-size: 2.5rem;
+        font-size: 2rem;
+    }
+    
+    .slider-wrapper {
+        padding: var(--space-md);
+    }
+    
+    .slider-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    /* Forms ultra-compact */
+    .install-card {
+        padding: var(--space-md);
+    }
+    
+    input, textarea, select {
+        padding: var(--space-sm) var(--space-md);
+    }
+    
+    .btn {
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.9375rem;
+        min-height: 44px;
+    }
+    
+    /* Features ultra-compact */
+    .features-section {
+        padding: var(--space-xl) var(--space-sm);
+    }
+    
+    .feature-card {
+        padding: var(--space-md);
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: var(--space-md);
+    }
+    
+    /* Tools ultra-compact */
+    .tools-section {
+        padding: var(--space-xl) var(--space-sm);
+    }
+    
+    .tool-card {
+        padding: var(--space-md);
+    }
+    
+    .tool-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    /* Footer ultra-compact */
+    .footer {
+        padding: var(--space-xl) var(--space-sm);
+        text-align: center;
+    }
+    
+    /* Admin ultra-compact */
+    .admin-main {
+        padding: var(--space-lg) var(--space-sm);
+    }
+    
+    .admin-hero {
+        padding: var(--space-lg) var(--space-sm);
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .panel {
+        padding: var(--space-md);
+    }
+    
+    /* WhatsApp float smaller */
+    .whatsapp-float {
+        width: 50px;
+        height: 50px;
+        bottom: var(--space-md);
+        right: var(--space-md);
     }
 }
 
